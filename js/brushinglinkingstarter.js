@@ -12,8 +12,21 @@ var svg1 = d3
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 //TODO: append svg object to the body of the page to house Scatterplot 2
-
+var svg2 = d3
+  .select("#dataviz_brushScatter")
+  .append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 //TODO: append svg object to the body of the page to house Bar chart 
+var svg3 = d3
+  .select("#dataviz_brushScatter")
+  .append("svg")
+  .attr("width", width + margin.left + margin.right)
+  .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+  .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 // Define color scale
 var color = d3
