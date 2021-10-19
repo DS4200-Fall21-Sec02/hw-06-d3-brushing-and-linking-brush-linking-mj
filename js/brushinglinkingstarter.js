@@ -108,6 +108,52 @@ d3.csv("data/iris.csv").then((data) => {
   //TODO: Scatterplot 2 (show Sepal width on x-axis and Petal width on y-axis)
 
   //TODO: Barchart with counts of different species
+    d3.csv("data/iris.csv").then(function (data) {
+
+    var dataNest = d3.group(data, d => d.Species)
+    console.log(dataNest);
+    let x = d3.scaleBand()
+      .range([0, width])
+      .domain(data.map(d => d.Species))
+
+    svg3.append("g")
+    .attr('transform', `translate(${margin}, ${margin})`);
+    .call(d3.axisBottom(x))
+    .call((g) => g
+        .append("text")
+        .attr("x", width)
+        .attr("y", margin.bottom)
+        .attr("text-anchor", "end")
+        .text("Species")
+        .attr("fill", "currentColor")
+    );
+
+    const yScale = d3.scaleLinear()
+    .range([height, 0]);
+    .domain([0, 200])
+    svg3.append("g")
+    .call(d3.axisLeft(y))
+    .call((g) =>
+        g
+        .append("text")
+        .attr("x", - margin.left)
+        .attr("y", 10)
+        .attr("text-anchor", "start")
+        .text()
+        .attr("fill", "currentColor")
+    );
+
+    svg3.append("g")
+    .selectAll("rect")
+    .data(dataNest)
+    .join("rect")
+    .attr('transform', `translate(${margin}, ${margin})`);
+    .attr("width", width)
+    .attr("height", height)
+    .style("fill", function (d) {
+      return color(d[0]);
+    })
+  })
 
   //Brushing Code---------------------------------------------------------------------------------------------
     
