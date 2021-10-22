@@ -19,6 +19,7 @@ var svg2 = d3
   .attr("height", height + margin.top + margin.bottom)
   .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 //TODO: append svg object to the body of the page to house Bar chart 
 var svg3 = d3
   .select("#dataviz_brushScatter")
@@ -106,18 +107,83 @@ d3.csv("data/iris.csv").then((data) => {
   }
 
   //TODO: Scatterplot 2 (show Sepal width on x-axis and Petal width on y-axis)
+  {
+    var xKey1 = "Sepal_Width";
+    var yKey1 = "Petal_Width";
+
+    //Add X axis
+    var x1 = d3
+      .scaleLinear()
+      .domain(d3.extent(data.map((val) => val[xKey1])))
+      .range([0, width]);
+    svg2
+      .append("g")
+      .attr("transform", "translate(0," + height + ")")
+      .call(d3.axisBottom(x1))
+      .call((g) =>
+        g
+          .append("text")
+          .attr("x", width)
+          .attr("y", margin.bottom - 4)
+          .attr("fill", "currentColor")
+          .attr("text-anchor", "end")
+          .text(xKey1)
+      );
+
+    //Add Y axis
+    var y1 = d3
+      .scaleLinear()
+      .domain(d3.extent(data.map((val) => val[yKey1])))
+      .range([height, 0]);
+      svg2
+      .append("g")
+      .call(d3.axisLeft(y1))
+      .call((g) =>
+        g
+          .append("text")
+          .attr("x", -margin.left)
+          .attr("y", 10)
+          .attr("fill", "currentColor")
+          .attr("text-anchor", "start")
+          .text(yKey1)
+      );
+
+    // Add dots
+    var myCircle1 = svg2
+      .append("g")
+      .selectAll("circle")
+      .data(data)
+      .enter()
+      .append("circle")
+      .attr("id", (d) => d.id)
+      .attr("cx", function (d) {
+        return x1(d[xKey1]);
+      })
+      .attr("cy", function (d) {
+        return y1(d[yKey1]);
+      })
+      .attr("r", 8)
+      .style("fill", function (d) {
+        return color(d.Species);
+      })
+      .style("opacity", 0.5);
+
+    //TODO: Define a brush
+
+    //TODO: Add brush to the svg
+    
+  }
 
   //TODO: Barchart with counts of different species
-    d3.csv("data/iris.csv").then(function (data) {
-
+  {
     var dataNest = d3.group(data, d => d.Species)
     console.log(dataNest);
     let x = d3.scaleBand()
       .range([0, width])
-      .domain(data.map(d => d.Species))
+      .domain(data.map(d => d.Species));
 
     svg3.append("g")
-    .attr('transform', `translate(${margin}, ${margin})`);
+    .attr('transform', `translate(${margin}, ${margin})`)
     .call(d3.axisBottom(x))
     .call((g) => g
         .append("text")
@@ -129,12 +195,11 @@ d3.csv("data/iris.csv").then((data) => {
     );
 
     const yScale = d3.scaleLinear()
-    .range([height, 0]);
+    .range([height, 0])
     .domain([0, 200])
     svg3.append("g")
-    .call(d3.axisLeft(y))
-    .call((g) =>
-        g
+    .call(d3.axisLeft(yScale))
+    .call((g) => g
         .append("text")
         .attr("x", - margin.left)
         .attr("y", 10)
@@ -147,13 +212,13 @@ d3.csv("data/iris.csv").then((data) => {
     .selectAll("rect")
     .data(dataNest)
     .join("rect")
-    .attr('transform', `translate(${margin}, ${margin})`);
+    .attr('transform', `translate(${margin}, ${margin})`)
     .attr("width", width)
     .attr("height", height)
     .style("fill", function (d) {
       return color(d[0]);
     })
-  })
+  }
 
   //Brushing Code---------------------------------------------------------------------------------------------
     
