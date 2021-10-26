@@ -101,14 +101,10 @@ d3.csv("data/iris.csv").then((data) => {
       .style("opacity", 0.5);
 
     //TODO: Define a brush
-    let brush1 = d3.brush();
-    
+
     //TODO: Add brush to the svg
-    svg1.call(brush1
-              .extent([[0, 0], [width, height]])
-              .on("start brush", updateChart1)
-              )
-    }
+    
+  }
 
   //TODO: Scatterplot 2 (show Sepal width on x-axis and Petal width on y-axis)
   {
@@ -173,12 +169,8 @@ d3.csv("data/iris.csv").then((data) => {
       .style("opacity", 0.5);
 
     //TODO: Define a brush
-    let brush2 = d3.brush();
+
     //TODO: Add brush to the svg
-    svg2.call(brush2
-              .extent([[0, 0], [width, height]])
-              .on("start brush", updateChart2)
-              )
     
   }
 
@@ -187,42 +179,43 @@ d3.csv("data/iris.csv").then((data) => {
     var dataNest = d3.group(data, d => d.Species)
     console.log(dataNest);
     let x = d3.scaleBand()
+      .domain(data.map(d => d.Species))
       .range([0, width])
-      .domain(data.map(d => d.Species));
+      .padding([(0.05)])
 
     svg3.append("g")
-    .attr('transform', `translate(${margin}, ${margin})`)
+    .attr("transform", "translate(0," + height + ")")
     .call(d3.axisBottom(x))
     .call((g) => g
         .append("text")
         .attr("x", width)
         .attr("y", margin.bottom)
+        .attr("fill", "currentColor")
         .attr("text-anchor", "end")
         .text("Species")
-        .attr("fill", "currentColor")
     );
 
-    const yScale = d3.scaleLinear()
+    let y = d3.scaleLinear()
     .range([height, 0])
-    .domain([0, 200])
+    .domain([0, d3.max(dataNest, d => d[1].length)])
     svg3.append("g")
-    .call(d3.axisLeft(yScale))
+    .call(d3.axisLeft(y))
     .call((g) => g
         .append("text")
-        .attr("x", - margin.left)
+        .attr("x", -margin.left)
         .attr("y", 10)
+        .attr("fill", "currentColor")
         .attr("text-anchor", "start")
         .text()
-        .attr("fill", "currentColor")
     );
 
-    svg3.append("g")
+    let bars = svg3.append("g")
     .selectAll("rect")
     .data(dataNest)
     .join("rect")
-    .attr('transform', `translate(${margin}, ${margin})`)
-    .attr("width", width)
-    .attr("height", height)
+    .attr('transform', d => `translate(${x(d[0]) + x.bandwidth() / 4},0)`)
+    .attr("width", x.bandwidth() / 2)
+    .attr("height", d => height - y(d[1].length))
     .style("fill", function (d) {
       return color(d[0]);
     })
@@ -238,12 +231,10 @@ d3.csv("data/iris.csv").then((data) => {
 
     //Is called when we brush on scatterplot #1
     function updateChart1(brushEvent) {
-        svg1.call(brush1.clear)
         extent = brushEvent.selection;
     
         //TODO: Check all the circles that are within the brush region in Scatterplot 1
-        myCircle1.classed("selected", function(d){ return isBrushed(extent, x(d.Sepal_Length), y(d.Petal_Length) ) } )
-      }
+ 
     
         //TODO: Select all the data points in Scatterplot 2 which have the same id as those selected in Scatterplot 1
       
@@ -255,7 +246,7 @@ d3.csv("data/iris.csv").then((data) => {
       var selectedSpecies = new Set();
 
       //TODO: Check all the circles that are within the brush region in Scatterplot 2
-      myCircle1.classed("selected", function(d){ return isBrushed(extent, x(d.Sepal_Length), y(d.Petal_Length) ) } )
+
       //TODO: Select all the data points in Scatterplot 1 which have the same id as those selected in Scatterplot 2
 
       //TODO: Select bars in bar chart based on species selected in Scatterplot 2
